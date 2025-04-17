@@ -46,7 +46,7 @@ def say_hello():
 
     model = MODEL_CLASS(project_id=project_id,
                         label_config=label_config)
-    test_result = predict_standalone("test")
+    test_result = model.predict_standalone("test")
     
     return jsonify({'message': 'Hello from the other side '+test_result})
 
