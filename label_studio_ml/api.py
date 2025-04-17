@@ -31,6 +31,11 @@ def init_app(model_class, basic_auth_user=None, basic_auth_pass=None):
     return _server
 
 
+@_server.route('/hello', methods=['GET'])
+def say_hello():
+    return jsonify({'message': 'Hello from the other side 👋'})
+
+
 @_server.route('/predict', methods=['POST'])
 @exception_handler
 def _predict():
@@ -173,6 +178,8 @@ def safe_str_cmp(a, b):
 
 @_server.before_request
 def check_auth():
+    if request.path == '/hello':
+        return  # Skip auth for this path
     if BASIC_AUTH is not None:
 
         auth = request.authorization
