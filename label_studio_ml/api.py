@@ -1,6 +1,7 @@
 import hmac
 import logging
 import os
+import json
 
 from flask import Flask, request, jsonify, Response
 
@@ -59,6 +60,9 @@ def _predict():
     Predictions in LS format
     """
     data = request.json
+    # check whats inside to mock it
+    print(json.dumps(request.json, indent=2))
+
     tasks = data.get('tasks')
     label_config = data.get('label_config')
     project = str(data.get('project'))
