@@ -36,9 +36,6 @@ def init_app(model_class, basic_auth_user=None, basic_auth_pass=None):
 def custom_inference():
     
     CUSTOM_INFERENCE_SECRET = os.getenv("CUSTOM_INFERENCE_SECRET")
-    print("________________")
-    print(CUSTOM_INFERENCE_SECRET)
-    print("________________")
     if request.args.get("secret") != CUSTOM_INFERENCE_SECRET:
         return jsonify({'error': 'Forbidden'}), 403
     FAKE_LABEL_CONF = """<View>  <Image name="image" value="$image" zoom="true" zoomControl="true" rotateControl="true"/>  <View><Filter toName="label" minlength="0" name="filter"/><RectangleLabels name="label" toName="image">          <Label value="Carrot" background="#FFA39E"/><Label value="Broccoli" background="#D4380D"/><Label value="Tomato" background="#FFC069"/><Label value="Cucumber" background="#AD8B00"/><Label value="Bell-Pepper" background="#D3F261"/><Label value="Ginger" background="#5CDBD3"/><Label value="Garlic" background="#096DD9"/><Label value="Onion" background="#ADC6FF"/><Label value="Eggplant" background="#9254DE"/><Label value="Pumpkin" background="#F759AB"/><Label value="Cabagge" background="#FFA39E"/><Label value="Salad" background="#D4380D"/><Label value="Spinach" background="#FFC069"/><Label value="Leek" background="#AD8B00"/><Label value="Mushroom" background="#389E0D"/><Label value="Zucchini" background="#5CDBD3"/><Label value="Chilli" background="#096DD9"/><Label value="Cauliflower" background="#ADC6FF"/><Label value="Apple" background="#9254DE"/><Label value="Banana" background="#F759AB"/><Label value="Strawberry" background="#FFA39E"/><Label value="Lime" background="#D4380D"/><Label value="Lemon" background="#FFC069"/><Label value="Avocado" background="#AD8B00"/><Label value="Mango" background="#D3F261"/><Label value="Orange" background="#389E0D"/><Label value="Egg" background="#5CDBD3"/><Label value="Rice" background="#096DD9"/><Label value="Pasta" background="#ADC6FF"/><Label value="Lentils" background="#9254DE"/><Label value="Chickpeas" background="#F759AB"/><Label value="Corn" background="#FFA39E"/><Label value="Beans" background="#D4380D"/><Label value="Peas" background="#FFC069"/><Label value="Tofu" background="#AD8B00"/><Label value="Flour" background="#D3F261"/><Label value="Plantmilk" background="#389E0D"/><Label value="Nuts" background="#5CDBD3"/><Label value="Oil" background="#096DD9"/><Label value="Soysauce" background="#ADC6FF"/><Label value="Canned-Tomato" background="#9254DE"/><Label value="Vinegar" background="#F759AB"/><Label value="Balsamico" background="#FFA39E"/><Label value="Cheese" background="#D4380D"/><Label value="Yoghurt" background="#FFC069"/><Label value="Milk" background="#AD8B00"/><Label value="Butter" background="#D3F261"/><Label value="Curd" background="#389E0D"/><Label value="Skyr" background="#5CDBD3"/><Label value="Potato" background="#FFA39E"/><Label value="Scallion" background="#FFA39E"/></RectangleLabels></View></View>"""
@@ -53,7 +50,13 @@ def custom_inference():
 
     model = MODEL_CLASS(project_id=project_id,
                         label_config=label_config)
-    test_result = model.predict_standalone("test")
+
+    # read image from bytes 
+    uploaded_file = request.files.get('image')
+    if not uploaded_file:
+        return jsonify({'error': 'Missing image'}), 400
+    image_bytes = uploaded_file.read()
+    test_result = model.predict_standalone(image_bytes)
     
     return jsonify({'message': 'Hello from the other side '+test_result})
 
