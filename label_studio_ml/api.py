@@ -56,9 +56,10 @@ def custom_inference():
     if not uploaded_file:
         return jsonify({'error': 'Missing image'}), 400
     image_bytes = uploaded_file.read()
-    test_result = model.predict_standalone(image_bytes)
+    raw_result = model.predict_standalone(image_bytes)
+    final_result = model.model_response_to_annotated_image(image_bytes, raw_result)
     
-    return jsonify({'message': 'Hello from the other side '+str(test_result)})
+    return Response(final_result, mimetype='image/png')
 
 
 @_server.route('/predict', methods=['POST'])
