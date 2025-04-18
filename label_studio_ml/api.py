@@ -58,7 +58,7 @@ def custom_inference():
     image_bytes = uploaded_file.read()
     test_result = model.predict_standalone(image_bytes)
     
-    return jsonify({'message': 'Hello from the other side '+test_result})
+    return jsonify({'message': 'Hello from the other side '+str(test_result)})
 
 
 @_server.route('/predict', methods=['POST'])
